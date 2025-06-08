@@ -6,8 +6,15 @@ class UsersController < ApplicationController
     @user = User.new
     @user["username"] = params["username"]
     @user["email"] = params["email"]
-    @user["password"] = params["password"]
+    # Check if email already exists
+    if User.find_by("email" => params["email"])
+      flash[:notice] = "Email already exists. Please use a different email"
+      redirect_to "/users/new"
+    else
+    @user["password"] = BCrypt::Password.create(params["password"])
     @user.save
-    redirect_to "/"
+    flash[:notice] = "Thanks for signing up. Now please login."
+    redirect_to "/login"
+    end
   end
 end
